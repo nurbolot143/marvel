@@ -8,9 +8,7 @@ import "./style/style.scss";
 
 const marvelService = new MarvelService();
 
-marvelService
-  .getCharahter(1011291)
-  .then((res) => console.log(res.data.results));
+marvelService.getAllCharahters().then((res) => console.log(res.data.results));
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
