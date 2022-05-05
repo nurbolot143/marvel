@@ -28,6 +28,8 @@ class RandomChar extends Component {
     // this.timerId = setInterval(this.updateChar, 3000);
   }
 
+  //test
+
   componentWillUnmount() {
     clearInterval(this.timerId);
   }
