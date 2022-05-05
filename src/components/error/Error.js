@@ -4,7 +4,7 @@ export const Error = () => {
   return (
     <div style={{ overflow: "hidden", width: "100%", height: "100%" }}>
       <img
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        style={{ width: "100%", height: "auto", objectFit: "cover" }}
         src={img}
         alt="Error"
       />
