@@ -2,65 +2,70 @@ import { Component } from "react";
 
 import mjolnir from "../../resources/img/mjolnir.png";
 import MarvelService from "../../services/MarvelService";
+import Spinner from "../spinner/Spinner";
+import Error from "../error/Error";
 
 import "./randomChar.scss";
+import { toHaveFocus } from "@testing-library/jest-dom/dist/matchers";
 class RandomChar extends Component {
   constructor(props) {
     super(props);
-
-    this.updateChar();
   }
-
   state = {
     char: {},
+    loading: true,
+    error: false,
   };
 
   marvelService = new MarvelService();
 
   onCharLoaded = (char) => {
-    this.setState({ char });
+    this.setState({ char, loading: false });
   };
+
+  onError = () => {
+    this.setState({ loading: false, error: true });
+  };
+
+  // componentDidMount() {
+  //   this.updateChar();
+  //   this.timerId = setInterval(this.updateChar, 3000);
+  // }
+
+  // componentWillUnmount() {
+  //   clearInterval(this.timerId);
+  // }
 
   updateChar = () => {
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    this.marvelService.getCharacter(id).then(this.onCharLoaded);
+    this.marvelService
+      .getCharacter(id)
+      .then(this.onCharLoaded)
+      .catch(this.onError);
+  };
+
+  static descrValidator = (description) => {
+    if (description && description.length > 210) {
+      return description.slice(0, 210) + "...";
+    } else if (!description) {
+      return "There is no description for this character.";
+    }
+    return description;
   };
 
   render() {
-    const {
-      char: { name, description, thumbnail, homepage, wiki },
-    } = this.state;
+    const { char, loading, error } = this.state;
 
-    const descrValidator = (description) => {
-      if (description && description.length > 210) {
-        return description.slice(0, 210) + "...";
-      } else if (!description) {
-        return "description not loaded!";
-      }
-      return description;
-    };
+    const spinner = loading ? <Spinner /> : null;
+    const errorMessage = error ? <Error /> : null;
+    const view = !(loading || error) ? <View char={char} /> : null;
 
     return (
       <div className="randomchar">
-        <div className="randomchar__block">
-          <img
-            src={thumbnail}
-            alt="Random character"
-            className="randomchar__img"
-          />
-          <div className="randomchar__info">
-            <p className="randomchar__name">{name}</p>
-            <p className="randomchar__descr">{descrValidator(description)}</p>
-            <div className="randomchar__btns">
-              <a href={homepage} className="button button__main">
-                <div className="inner">homepage</div>
-              </a>
-              <a href={wiki} className="button button__secondary">
-                <div className="inner">Wiki</div>
-              </a>
-            </div>
-          </div>
-        </div>
+        {spinner}
+        {errorMessage}
+        {view}
+
         <div className="randomchar__static">
           <p className="randomchar__title">
             Random character for today!
@@ -77,5 +82,29 @@ class RandomChar extends Component {
     );
   }
 }
+
+const View = ({ char }) => {
+  const { name, description, thumbnail, homepage, wiki } = char;
+
+  return (
+    <div className="randomchar__block">
+      <img src={thumbnail} alt="Random character" className="randomchar__img" />
+      <div className="randomchar__info">
+        <p className="randomchar__name">{name}</p>
+        <p className="randomchar__descr">
+          {RandomChar.descrValidator(description)}
+        </p>
+        <div className="randomchar__btns">
+          <a href={homepage} className="button button__main">
+            <div className="inner">homepage</div>
+          </a>
+          <a href={wiki} className="button button__secondary">
+            <div className="inner">Wiki</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default RandomChar;
