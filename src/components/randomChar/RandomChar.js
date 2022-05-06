@@ -47,15 +47,6 @@ class RandomChar extends Component {
       .catch(this.onError);
   };
 
-  static descrValidator = (description) => {
-    if (description && description.length > 210) {
-      return description.slice(0, 210) + "...";
-    } else if (!description) {
-      return "There is no description for this character.";
-    }
-    return description;
-  };
-
   render() {
     const { char, loading, error } = this.state;
 
@@ -106,9 +97,7 @@ const View = ({ char }) => {
       />
       <div className="randomchar__info">
         <p className="randomchar__name">{name}</p>
-        <p className="randomchar__descr">
-          {RandomChar.descrValidator(description)}
-        </p>
+        <p className="randomchar__descr">{description}</p>
         <div className="randomchar__btns">
           <a href={homepage} className="button button__main">
             <div className="inner">homepage</div>
